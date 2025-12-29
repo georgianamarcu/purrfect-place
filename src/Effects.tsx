@@ -1,4 +1,9 @@
-import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
+import {
+  Bloom,
+  EffectComposer,
+  N8AO,
+  ToneMapping,
+} from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 
 function Effects() {
@@ -12,7 +17,13 @@ function Effects() {
         denoiseRadius={9}
         distanceFalloff={0.2}
       />
-      <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+      <Bloom
+        mipmapBlur
+        intensity={0.9}
+        luminanceThreshold={0.15}
+        radius={0.6}
+      />
+      <ToneMapping mode={ToneMappingMode.REINHARD} />
     </EffectComposer>
   );
 }

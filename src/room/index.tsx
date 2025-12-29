@@ -3,57 +3,53 @@ import { useLayoutEffect, useMemo } from "react";
 import { useControls } from "leva";
 import {
   Mesh,
-  Material,
-  MeshStandardMaterial,
-  MeshBasicMaterial,
-  MeshPhongMaterial,
-  MeshLambertMaterial,
+  MeshToonMaterial,
+  DataTexture,
+  NearestFilter,
+  RedFormat,
 } from "three";
 
 const Room = () => {
   const { scene } = useGLTF("/room.glb");
 
-  // Find materials by name
-  const materials = useMemo(() => {
-    const materialMap = new Map<string, Material>();
+  const toonGradient = useMemo(() => {
+    const colors = new Uint8Array([0, 80, 160, 255]);
+    const format = RedFormat;
+    const tex = new DataTexture(colors, colors.length, 1, format);
+
+    tex.magFilter = NearestFilter;
+    tex.minFilter = NearestFilter;
+    tex.generateMipmaps = false;
+    tex.needsUpdate = true;
+    return tex;
+  }, []);
+
+  const colors = useControls({
+    secondary: { value: "#2d3a6d", label: "Walls/Ceiling" },
+    main: { value: "#8e6da8", label: "Wall Objects" },
+    dark_green: { value: "#224a54", label: "Dark Green" },
+    yellow: { value: "#f7bcff", label: "Yellow" },
+    purple: { value: "#5a4d8f", label: "Purple" },
+    pencil: { value: "#c9c9ca", label: "Pencil" },
+  });
+
+  useLayoutEffect(() => {
     scene.traverse((child) => {
-      if (child instanceof Mesh && child.material) {
-        const material = Array.isArray(child.material)
-          ? child.material[0]
-          : child.material;
-        if (material.name) {
-          materialMap.set(material.name, material);
+      if (child instanceof Mesh) {
+        const matName = child.material.name;
+
+        if (!(child.material instanceof MeshToonMaterial)) {
+          child.material = new MeshToonMaterial();
+        }
+        const hex = colors[matName as keyof typeof colors];
+        if (hex) {
+          child.material.color.set(hex.slice(0, 7));
+          child.material.gradientMap = toonGradient;
+          child.material.needsUpdate = true;
         }
       }
     });
-    return materialMap;
-  }, [scene]);
-
-  // Create Leva controls for each material
-  const colors = useControls({
-    main: { value: "#425084FF", label: "Main" },
-    secondary: { value: "#7D53A6FF", label: "Secondary" },
-    dark_green: { value: "#155E8BFF", label: "Dark Green" },
-    yellow: { value: "#FEBA48FF", label: "Yellow" },
-    purple: { value: "#800080", label: "Purple" },
-    pencil: { value: "#000000", label: "Pencil" },
-  });
-
-  // Update material colors when controls change
-  useLayoutEffect(() => {
-    Object.entries(colors).forEach(([name, color]) => {
-      const material = materials.get(name);
-      if (
-        material &&
-        (material instanceof MeshStandardMaterial ||
-          material instanceof MeshBasicMaterial ||
-          material instanceof MeshPhongMaterial ||
-          material instanceof MeshLambertMaterial)
-      ) {
-        material.color.set(color);
-      }
-    });
-  }, [colors, materials]);
+  }, [colors, scene, toonGradient]);
 
   return (
     <group>

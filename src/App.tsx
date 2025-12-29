@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { CameraControls, Center } from "@react-three/drei";
 import Room from "./room/index";
 import Environment from "./Environment";
-// import Effects from "./Effects";
+import Effects from "./Effects";
 
 function App() {
   return (
@@ -11,7 +11,7 @@ function App() {
         <Room />
       </Center>
       <Environment />
-      {/* <Effects /> */}
+      <Effects />
       <CameraControls makeDefault />
     </Canvas>
   );
