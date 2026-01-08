@@ -1,18 +1,23 @@
 import { Canvas } from "@react-three/fiber";
-import { CameraControls, Center } from "@react-three/drei";
-import Room from "./room/index";
 import Environment from "./Environment";
 import Effects from "./Effects";
+import Controls from "./Controls";
+import Room from "./room";
 
 function App() {
   return (
-    <Canvas shadows>
-      <Center>
-        <Room />
-      </Center>
+    <Canvas
+      shadows
+      camera={{
+        fov: 45,
+        near: 0.1,
+        far: 1000,
+      }}
+    >
       <Environment />
+      <Controls />
+      <Room />
       <Effects />
-      <CameraControls makeDefault />
     </Canvas>
   );
 }

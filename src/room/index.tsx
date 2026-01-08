@@ -52,7 +52,7 @@ const Room = () => {
   }, [colors, scene, toonGradient]);
 
   return (
-    <group>
+    <group position={[0, -0.4, 0]}>
       <primitive object={scene} />
     </group>
   );
