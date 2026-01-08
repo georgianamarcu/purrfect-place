@@ -1,6 +1,5 @@
 import { useGLTF } from "@react-three/drei";
 import { useLayoutEffect, useMemo } from "react";
-import { useControls } from "leva";
 import {
   Mesh,
   MeshToonMaterial,
@@ -8,6 +7,7 @@ import {
   NearestFilter,
   RedFormat,
 } from "three";
+import { StaticCollider } from "bvhecctrl";
 
 const Room = () => {
   const { scene } = useGLTF("/room.glb");
@@ -24,16 +24,15 @@ const Room = () => {
     return tex;
   }, []);
 
-  const colors = useControls({
-    secondary: { value: "#2d3a6d", label: "Walls/Ceiling" },
-    main: { value: "#8e6da8", label: "Wall Objects" },
-    dark_green: { value: "#224a54", label: "Dark Green" },
-    yellow: { value: "#f7bcff", label: "Yellow" },
-    purple: { value: "#5a4d8f", label: "Purple" },
-    pencil: { value: "#c9c9ca", label: "Pencil" },
-  });
-
   useLayoutEffect(() => {
+    const colors = {
+      secondary: { value: "#2d3a6d", label: "Walls/Ceiling" },
+      main: { value: "#8e6da8", label: "Wall Objects" },
+      dark_green: { value: "#224a54", label: "Dark Green" },
+      yellow: { value: "#f7bcff", label: "Yellow" },
+      purple: { value: "#5a4d8f", label: "Purple" },
+      pencil: { value: "#c9c9ca", label: "Pencil" },
+    };
     scene.traverse((child) => {
       if (child instanceof Mesh) {
         const matName = child.material.name;
@@ -43,18 +42,22 @@ const Room = () => {
         }
         const hex = colors[matName as keyof typeof colors];
         if (hex) {
-          child.material.color.set(hex.slice(0, 7));
+          child.material.color.set(
+            (hex as { value: string }).value.slice(0, 7)
+          );
           child.material.gradientMap = toonGradient;
           child.material.needsUpdate = true;
         }
       }
     });
-  }, [colors, scene, toonGradient]);
+  }, [scene, toonGradient]);
 
   return (
-    <group>
-      <primitive object={scene} />
-    </group>
+    <StaticCollider>
+      <group position={[0, -0.4, 0]}>
+        <primitive object={scene} />
+      </group>
+    </StaticCollider>
   );
 };
 
