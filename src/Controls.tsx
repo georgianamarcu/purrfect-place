@@ -1,26 +1,31 @@
 import { CameraControls } from "@react-three/drei";
-import { type RefCallback, useCallback } from "react";
+import { useRef } from "react";
+import { useEcctrlStore, type BVHEcctrlApi, type StoreState } from "bvhecctrl";
+import { useFrame } from "@react-three/fiber";
 
-const initialCameraPosition = [
-  1.8153088655068363, 0.2666952878156663, 1.6757173667993213,
-];
-
-const Controls = () => {
-  const ControlsHandler: RefCallback<CameraControls> = useCallback(
-    (controls) => {
-      controls?.setPosition(
-        initialCameraPosition[0],
-        initialCameraPosition[1],
-        initialCameraPosition[2],
-        false
-      );
-    },
-    []
+const Controls = ({
+  ecctrlRef,
+}: {
+  ecctrlRef: React.RefObject<BVHEcctrlApi | null>;
+}) => {
+  const camControlRef = useRef<CameraControls | null>(null);
+  const colliderMeshesArray = useEcctrlStore(
+    (state: StoreState) => state.colliderMeshesArray
   );
+
+  useFrame(() => {
+    if (ecctrlRef.current?.group && camControlRef.current) {
+      const catPos = ecctrlRef.current.group.position;
+      camControlRef.current.moveTo(catPos.x, catPos.y + 0.6, catPos.z, true);
+    }
+  });
+
   return (
     <CameraControls
+      ref={camControlRef}
+      colliderMeshes={colliderMeshesArray}
+      smoothTime={0.1}
       makeDefault
-      ref={ControlsHandler}
       minPolarAngle={0}
       maxPolarAngle={Math.PI / 2}
       maxDistance={10}

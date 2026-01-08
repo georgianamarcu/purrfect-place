@@ -3,8 +3,12 @@ import Environment from "./Environment";
 import Effects from "./Effects";
 import Controls from "./Controls";
 import Room from "./room";
+import { Cat } from "./Cat";
+import { type BVHEcctrlApi } from "bvhecctrl";
+import { useRef } from "react";
 
 function App() {
+  const ecctrlRef = useRef<BVHEcctrlApi | null>(null);
   return (
     <Canvas
       shadows
@@ -15,8 +19,9 @@ function App() {
       }}
     >
       <Environment />
-      <Controls />
+      <Controls ecctrlRef={ecctrlRef} />
       <Room />
+      <Cat ecctrlRef={ecctrlRef} />
       <Effects />
     </Canvas>
   );
