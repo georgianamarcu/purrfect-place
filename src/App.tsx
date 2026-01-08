@@ -6,9 +6,20 @@ import Room from "./room";
 import { Cat } from "./Cat";
 import { type BVHEcctrlApi } from "bvhecctrl";
 import { useRef } from "react";
+import { KeyboardControls } from "@react-three/drei";
 
 function App() {
   const ecctrlRef = useRef<BVHEcctrlApi | null>(null);
+
+  const keyboardMap = [
+    { name: "forward", keys: ["ArrowUp", "KeyW", "KeyZ"] },
+    { name: "backward", keys: ["ArrowDown", "KeyS"] },
+    { name: "leftward", keys: ["ArrowLeft", "KeyA", "KeyQ"] },
+    { name: "rightward", keys: ["ArrowRight", "KeyD"] },
+    { name: "jump", keys: ["Space"] },
+    { name: "nap", keys: ["Enter"] },
+  ];
+
   return (
     <Canvas
       shadows
@@ -21,7 +32,9 @@ function App() {
       <Environment />
       <Controls ecctrlRef={ecctrlRef} />
       <Room />
-      <Cat ecctrlRef={ecctrlRef} />
+      <KeyboardControls map={keyboardMap}>
+        <Cat ecctrlRef={ecctrlRef} />
+      </KeyboardControls>
       <Effects />
     </Canvas>
   );
