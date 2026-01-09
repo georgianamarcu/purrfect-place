@@ -47,6 +47,7 @@ function App() {
           color: "#333",
           transition: "all 0.2s ease",
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+          userSelect: "none",
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 1)";

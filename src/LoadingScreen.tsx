@@ -16,6 +16,7 @@ const LoadingScreen = ({ onComplete }: { onComplete?: () => void }) => {
   const [isReady, setIsReady] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const { progress } = useProgress();
+  const [isHidden, setIsHidden] = useState(false);
 
   useEffect(() => {
     if (progress === 100 && !isReady) {
@@ -34,16 +35,21 @@ const LoadingScreen = ({ onComplete }: { onComplete?: () => void }) => {
         duration: 0.8,
         ease: "power2.inOut",
         onComplete: () => {
+          setIsHidden(true);
           if (onComplete) onComplete();
         },
       });
     }
   };
 
+  if (isHidden) return null;
+
   return (
     <div
       ref={containerRef}
-      className="fixed top-0 left-0 w-full h-screen flex flex-col items-center justify-center overflow-hidden z-50"
+      className={`fixed top-0 left-0 w-full h-screen flex flex-col items-center justify-center overflow-hidden z-50 ${
+        isHidden ? "pointer-events-none" : ""
+      }`}
       style={{
         fontFamily: '"Cherry Bomb One", system-ui',
         background:
